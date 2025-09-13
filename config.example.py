@@ -1,0 +1,3 @@
+DISCORD_BOT_TOKEN = ''
+DISCORD_GUILD_ID = ''
+SQLITE_DB_PATH = 'db.sqlite'
