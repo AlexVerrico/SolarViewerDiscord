@@ -56,10 +56,10 @@ async def graph(interaction: discord.Interaction, component: str, hours: int):
         now = datetime.utcnow().timestamp()
         start_timestamp = now - hours * 60 * 60
         end_timestamp = now
-        if hours <= 3:
+        if hours <= 6:
             granularity = 5 * 60
-        elif 3 < hours <= 12:
-            granularity = 30 * 60
+        elif 6 < hours <= 12:
+            granularity = 15 * 60
             print('<12')
         elif 24 >= hours > 12:
             granularity = 30 * 60
