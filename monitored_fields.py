@@ -75,7 +75,7 @@ monitored_fields = {
         'unit': 'V',
         'limits': {
             'min': 40,
-            'max': 60
+            'max': 62
         },
         'graphable': True
     },
