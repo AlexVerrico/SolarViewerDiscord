@@ -57,15 +57,12 @@ async def graph(interaction: discord.Interaction, component: str, hours: int):
         start_timestamp = now - hours * 60 * 60
         end_timestamp = now
         if hours <= 6:
-            granularity = 5 * 60
+            granularity = 1  * 60
         elif 6 < hours <= 12:
-            granularity = 15 * 60
-            print('<12')
+            granularity = 5 * 60
         elif 24 >= hours > 12:
-            granularity = 30 * 60
-            print('24>= x > 12')
+            granularity = 10 * 60
         else:
-            print('else')
             granularity = 60 * 60
 
         with sqlite3.connect(db_file) as conn:
@@ -90,10 +87,20 @@ async def graph(interaction: discord.Interaction, component: str, hours: int):
         output.append((last_row[0], last_row[1], last_row[2], transform_date(last_row[0])))
 
         fig = plt.figure(dpi=128, figsize=(16, 9))
-        plt.title(component, fontsize=24)
+        plt.title(f'{component} - {hours} hours to {str(datetime.fromtimestamp(output[-1][0]) + timedelta(hours=10))}', fontsize=24)
         plt.plot([row[3] for row in output], [row[2] for row in output])
+        last_annotated = None
+        count_since_annotated = 0
         for row in output:
+            count_since_annotated += 1
+            if last_annotated == row[2] and count_since_annotated < 5:
+                continue
+            if last_annotated is not None and count_since_annotated < 5:
+                if last_annotated * 1.01 > row[2] > last_annotated * 0.999:
+                    continue
             plt.annotate(xy=(transform_date(row[0]), row[2]), text=row[2])
+            last_annotated = row[2]
+            count_since_annotated = 0
         plt.ylim(monitored_fields[component]['limits']['min'], monitored_fields[component]['limits']['max'])
         plt.xlabel('Time', fontsize=16)
         plt.ylabel(monitored_fields[component]['unit'], fontsize=16)
